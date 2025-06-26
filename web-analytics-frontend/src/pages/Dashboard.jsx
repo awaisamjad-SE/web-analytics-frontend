@@ -1,26 +1,28 @@
-import React, { useEffect, useState } from "react";
+// Dashboard.jsx
+import { useEffect, useState } from "react";
 
 export default function Dashboard() {
-  const [data, setData] = useState(null);
-  const web_id = localStorage.getItem("web_id");
+  const [userData, setUserData] = useState(null);
 
   useEffect(() => {
-    fetch(`https://octopus-app-qevgj.ondigitalocean.app/api/dashboard-data/?web_id=${web_id}`)
-      .then(res => res.json())
-      .then(setData)
-      .catch(err => console.error("Error loading dashboard:", err));
-  }, [web_id]);
+    const stored = localStorage.getItem("user");
+    if (stored) {
+      const parsed = JSON.parse(stored);
+      setUserData(parsed);
+    } else {
+      window.location.href = "/login";
+    }
+  }, []);
 
-  if (!web_id) return <p>Please log in</p>;
-  if (!data) return <p>Loading dashboard...</p>;
+  if (!userData) return <p className="text-center p-4">Loading dashboard...</p>;
 
   return (
-    <div style={{ padding: "2rem" }}>
-      <h2>Dashboard for {web_id}</h2>
-      <p>Total Visits: {data.total_visits}</p>
-      <p>Average Time on Page: {data.avg_time}s</p>
-      <p>Top Page: {data.top_page}</p>
-      {/* Add more stats later */}
+    <div className="p-4">
+      <h2 className="text-2xl font-bold mb-4">Welcome {userData.name}</h2>
+      <p><strong>Web ID:</strong> {userData.web_id}</p>
+      <p><strong>Email:</strong> {userData.email}</p>
+      <p><strong>Domain:</strong> {userData.domain}</p>
+      {/* Add graphs and stats below */}
     </div>
   );
 }
